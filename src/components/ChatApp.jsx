@@ -21,50 +21,50 @@ const examples = [
 
   useEffect(scrollToBottom, [history]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
   if (!message.trim()) return;
 
-  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  const newHistory = [...history, { role: 'user', content: message, time }];
-  setHistory(newHistory);
-  setMessage('');
-  setLoading(true);
+    const newHistory = [...history, { role: 'user', content: message, time }];
+    setHistory(newHistory);
+    setMessage('');
+    setLoading(true);
 
-  const ws = new WebSocket("wss://fredericksundeep-aiapisgateway.hf.space/chat-stream");
+    //const assistant = { role: 'assistant', content: '', time };
+    //setHistory(h => [...h, assistant]);
 
-  ws.onopen = () => {
-    ws.send(JSON.stringify({
-      message,
-      history: newHistory
-    }));
-  };
+    const response = await fetch('https://fredericksundeep-aiapisgateway.hf.space/chat-stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, history: newHistory }),
+    });
 
-  let content = '';
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    let content = '';
 
-  ws.onmessage = (event) => {
-    const token = event.data;
-    content += token;
-
+   while (!done) {
+  const { value, done: isDone } = await reader.read();
+  if (value) {
+    const chunk = decoder.decode(value);
+    content += chunk;
+    
+    const currentContent = content; // capture safe reference
     setHistory(h =>
       h.map((msg, i) =>
         i === newHistory.length
-          ? { ...msg, content }
+          ? { ...msg, content: currentContent }
           : msg
       )
     );
-  };
-
-  ws.onclose = () => {
-    setHistory(h => [...h, { role: 'assistant', content, time }]);
+  }
+  done = isDone;
+}
+setHistory(h => [...h, { role: 'assistant', content, time }]);
     setLoading(false);
   };
-
-  ws.onerror = (err) => {
-    console.error("WebSocket error:", err);
-    setLoading(false);
-  };
-};
 
   return (
     <div className="chat-container">
