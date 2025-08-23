@@ -20,7 +20,7 @@ const examples = [
   };
 
   useEffect(scrollToBottom, [history]);
-
+const token = process.env.REACT_APP_HF_TOKEN;
   const sendMessage = async () => {
   if (!message.trim()) return;
 
