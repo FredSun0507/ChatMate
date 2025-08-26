@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import MessageBubble from './MessageBubble';
 import { Button , Typography, Box} from '@mui/material';
 import { ChatBubbleOutline } from '@mui/icons-material';
+import PipelineLoader from './PipelineLoader';
 export default function ChatApp() {
   const [message, setMessage] = useState('');
   const [history, setHistory] = useState([]);
@@ -122,12 +123,12 @@ setHistory(h => [...h, { role: 'assistant', content, time }]);
     <MessageBubble key={i} {...msg} />
   ))}
 
-  {loading && (
+  {/* {loading && (
     <div className="typing-indicator">
       <span className="dot"></span><span className="dot"></span><span className="dot"></span>
     </div>
-  )}
-
+  )} */}
+{loading && <PipelineLoader />}
   <div ref={chatEndRef} />
 </div>
       <div className="input-area">
