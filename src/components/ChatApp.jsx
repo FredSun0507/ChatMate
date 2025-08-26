@@ -20,7 +20,7 @@ const examples = [
   };
 
   useEffect(scrollToBottom, [history]);
-const token = process.env.REACT_APP_HF_TOKEN;
+const token = process.env.HF_TOKEN;
   const sendMessage = async () => {
   if (!message.trim()) return;
 
@@ -34,9 +34,10 @@ const token = process.env.REACT_APP_HF_TOKEN;
     //const assistant = { role: 'assistant', content: '', time };
     //setHistory(h => [...h, assistant]);
 
-    const response = await fetch('/api/huggingface', {
+    const response = await fetch('https://fredericksundeep-aiapisgateway.hf.space/chat-stream', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json' },
       body: JSON.stringify({ message, history: newHistory }),
     });
 
