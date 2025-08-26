@@ -6,7 +6,6 @@ export async function POST(req) {
     "https://fredericksundeep-chatmateapi.hf.space/chat-stream",
     {
       method: "POST",
-      headers: { 'Content-Type': 'application/json' },
       headers: { Authorization: `Bearer ${HF_TOKEN}` },
       body: JSON.stringify({ message: body.message, history: body.history }),
     }
